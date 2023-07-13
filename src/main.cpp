@@ -50,7 +50,7 @@ void icpExample() {
     std::vector<Point*> dynamicPointCloud;
     createPoints(dynamicPointCloud);
 
-    // apply an artitrary rotation and translation to the dynamic point cloud to misalign the point cloud.
+    // apply an arbitrary rotation and translation to the dynamic point cloud to misalign the point cloud.
     float rotation[] = {1.0f, 0.0f, 0.0f, 0.0f, 0.70710678f, -0.70710678f, 0.0f, 0.70710678f, 0.70710678f};
     float translation[] = {-0.75f, 0.5f, -0.5f};
     applyAffineTransform(dynamicPointCloud, rotation, translation);
