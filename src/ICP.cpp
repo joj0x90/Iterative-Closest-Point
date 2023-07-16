@@ -32,8 +32,8 @@ std::pair<std::vector<float>, std::vector<float>> gs::icp(std::vector<Point*>& d
     // initialize the rotation matrix
     clearRotation(rotationMatrix);
 
-    const int maxIterations = 400;
-    const int numRandomSamples = 400;
+    const int maxIterations = 1000;
+    const int numRandomSamples = 1000;
     const float eps = 1e-8;
     gs::Point p;
     gs::Point x;
@@ -58,6 +58,9 @@ std::pair<std::vector<float>, std::vector<float>> gs::icp(std::vector<Point*>& d
     vSvd[0] = new float[3];
     vSvd[1] = new float[3];
     vSvd[2] = new float[3];
+
+    float rotationCumulative[9];
+    clearRotation(rotationCumulative);
 
     for (int iter = 0; iter < maxIterations && abs(cost) > eps; iter++) {
         cost = 0.0;
@@ -104,6 +107,12 @@ std::pair<std::vector<float>, std::vector<float>> gs::icp(std::vector<Point*>& d
             rotate(dynamicPointCloud[i], rotationMatrix, &p);
             translate(&p, translation, dynamicPointCloud[i]);
         }
+
+        float rotationMatCopy[9];
+        matrixMult(rotationMatrix, rotationCumulative, rotationMatCopy);
+        for (int i = 0; i < 9; i++) {
+            rotationCumulative[i] = rotationMatCopy[i];
+        }
     }
 
     staticPointCloudCopy.clear();
@@ -120,7 +129,7 @@ std::pair<std::vector<float>, std::vector<float>> gs::icp(std::vector<Point*>& d
     delete[] vSvd;
 
     std::vector<float> rot, trans;
-    for (auto r : rotationMatrix) {
+    for (auto r : rotationCumulative) {
         rot.push_back(r);
     }
     for (auto t : translation) {
